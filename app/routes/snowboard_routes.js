@@ -3,7 +3,7 @@ const express = require('express')
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
 
-// pull in Mongoose model for pets
+// pull in Mongoose model for snowboards
 const Snowboard = require('../models/snowboard')
 
 // this is a collection of methods that help us detect situations when we need
@@ -28,44 +28,44 @@ const requireToken = passport.authenticate('bearer', { session: false })
 const router = express.Router()
 
 // INDEX
-// GET /pets
+// GET /snowboards
 router.get('/snowboards', (req, res, next) => {
-	//we want anyone to see pets so no requireToken
+	//we want anyone to see snowboards so no requireToken
 	//if we wanted to protect resources we could add that back in between
 	//route and callback as second argument
+	console.log(req)
 	Snowboard.find()
 		.then((snowboards) => {
-			// `pets` will be an array of Mongoose documents
+			// `snowboards` will be an array of Mongoose documents
 			// we want to convert each one to a POJO, so we use `.map` to
 			// apply `.toObject` to each one
 			return snowboards.map((snowboard) => snowboard.toObject())
 		})
-		// respond with status 200 and JSON of the pets
+		// respond with status 200 and JSON of the snowboards
 		.then((snowboards) => res.status(200).json({ snowboards: snowboards }))
 		// if an error occurs, pass it to the handler
 		.catch(next)
 })
 
 // SHOW
-// GET /pets/5a7db6c74d55bc51bdf39793
+// GET /snowboards/5a7db6c74d55bc51bdf39793
 router.get('/snowboards/:id', (req, res, next) => {
 	// req.params.id will be set based on the `:id` in the route
 	Snowboard.findById(req.params.id)
 		.then(handle404)
-		// if `findById` is succesful, respond with 200 and "pet" JSON
+		// if `findById` is succesful, respond with 200 and "snowboard" JSON
 		.then((snowboard) => res.status(200).json({ snowboard: snowboard.toObject() }))
 		// if an error occurs, pass it to the handler
 		.catch(next)
 })
 
 // CREATE
-// POST /pets
+// POST /snowboards
 router.post('/snowboards', requireToken, (req, res, next) => {
-	// set owner of new pet to be current user
+	// set owner of new snowboard to be current user
 	req.body.snowboard.owner = req.user.id
-
 	Snowboard.create(req.body.snowboard)
-		// respond to succesful `create` with status 201 and JSON of new "pet"
+		// respond to succesful `create` with status 201 and JSON of new "snowboard"
 		.then((snowboard) => {
 			res.status(201).json({ snowboard: snowboard.toObject() })
 		})
@@ -76,7 +76,7 @@ router.post('/snowboards', requireToken, (req, res, next) => {
 })
 
 // UPDATE
-// PATCH /pets/5a7db6c74d55bc51bdf39793
+// PATCH /snowboards/5a7db6c74d55bc51bdf39793
 router.patch('/snowboards/:id', requireToken, removeBlanks, (req, res, next) => {
 	// if the client attempts to change the `owner` property by including a new
 	// owner, prevent that by deleting that key/value pair
@@ -99,14 +99,14 @@ router.patch('/snowboards/:id', requireToken, removeBlanks, (req, res, next) => 
 })
 
 // DESTROY
-// DELETE /pets/5a7db6c74d55bc51bdf39793
+// DELETE /snowboards/5a7db6c74d55bc51bdf39793
 router.delete('/snowboards/:id', requireToken, (req, res, next) => {
 	Snowboard.findById(req.params.id)
 		.then(handle404)
 		.then((snowboard) => {
-			// throw an error if current user doesn't own `pet`
+			// throw an error if current user doesn't own `snowboard`
 			requireOwnership(req, snowboard)
-			// delete the pet ONLY IF the above didn't throw
+			// delete the snowboard ONLY IF the above didn't throw
 			snowboard.deleteOne()
 		})
 		// send back 204 and no content if the deletion succeeded
