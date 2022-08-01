@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const { Schema, model } = mongoose;
 
-const snerberdSchema = new Schema({
+const snowboardSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -27,4 +27,4 @@ const snerberdSchema = new Schema({
 );
 
 
-module.exports = model("Snerberd", snerberdSchema);
+module.exports = model("Snowboard", snowboardSchema);

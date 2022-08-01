@@ -4,7 +4,7 @@ const express = require('express')
 const passport = require('passport')
 
 // pull in Mongoose model for pets
-const Snerberd = require('../models/snerberd')
+const Snowboard = require('../models/snowboard')
 
 // this is a collection of methods that help us detect situations when we need
 // to throw a custom error
@@ -29,45 +29,45 @@ const router = express.Router()
 
 // INDEX
 // GET /pets
-router.get('/snerberds', (req, res, next) => {
+router.get('/snowboards', (req, res, next) => {
 	//we want anyone to see pets so no requireToken
 	//if we wanted to protect resources we could add that back in between
 	//route and callback as second argument
-	Snerberd.find()
-		.then((snerberds) => {
+	Snowboard.find()
+		.then((snowboards) => {
 			// `pets` will be an array of Mongoose documents
 			// we want to convert each one to a POJO, so we use `.map` to
 			// apply `.toObject` to each one
-			return snerberds.map((snerberd) => snerberd.toObject())
+			return snowboards.map((snowboard) => snowboard.toObject())
 		})
 		// respond with status 200 and JSON of the pets
-		.then((snerberds) => res.status(200).json({ snerberds: snerberds }))
+		.then((snowboards) => res.status(200).json({ snowboards: snowboards }))
 		// if an error occurs, pass it to the handler
 		.catch(next)
 })
 
 // SHOW
 // GET /pets/5a7db6c74d55bc51bdf39793
-router.get('/snerberds/:id', (req, res, next) => {
+router.get('/snowboards/:id', (req, res, next) => {
 	// req.params.id will be set based on the `:id` in the route
-	Snerberd.findById(req.params.id)
+	Snowboard.findById(req.params.id)
 		.then(handle404)
 		// if `findById` is succesful, respond with 200 and "pet" JSON
-		.then((snerberd) => res.status(200).json({ snerberd: snerberd.toObject() }))
+		.then((snowboard) => res.status(200).json({ snowboard: snowboard.toObject() }))
 		// if an error occurs, pass it to the handler
 		.catch(next)
 })
 
 // CREATE
 // POST /pets
-router.post('/snerberds', requireToken, (req, res, next) => {
+router.post('/snowboards', requireToken, (req, res, next) => {
 	// set owner of new pet to be current user
-	req.body.snerberd.owner = req.user.id
+	req.body.snowboard.owner = req.user.id
 
-	Snerberd.create(req.body.snerberd)
+	Snowboard.create(req.body.snowboard)
 		// respond to succesful `create` with status 201 and JSON of new "pet"
-		.then((snerberd) => {
-			res.status(201).json({ snerberd: snerberd.toObject() })
+		.then((snowboard) => {
+			res.status(201).json({ snowboard: snowboard.toObject() })
 		})
 		// if an error occurs, pass it off to our error handler
 		// the error handler needs the error message and the `res` object so that it
@@ -77,20 +77,20 @@ router.post('/snerberds', requireToken, (req, res, next) => {
 
 // UPDATE
 // PATCH /pets/5a7db6c74d55bc51bdf39793
-router.patch('/snerberds/:id', requireToken, removeBlanks, (req, res, next) => {
+router.patch('/snowboards/:id', requireToken, removeBlanks, (req, res, next) => {
 	// if the client attempts to change the `owner` property by including a new
 	// owner, prevent that by deleting that key/value pair
-	delete req.body.snerberd.owner
+	delete req.body.snowboard.owner
 
-	Snerberd.findById(req.params.id)
+	Snowboard.findById(req.params.id)
 		.then(handle404)
-		.then((snerberd) => {
+		.then((snowboard) => {
 			// pass the `req` object and the Mongoose record to `requireOwnership`
 			// it will throw an error if the current user isn't the owner
-			requireOwnership(req, snerberd)
+			requireOwnership(req, snowboard)
 
 			// pass the result of Mongoose's `.update` to the next `.then`
-			return snerberd.updateOne(req.body.snerberd)
+			return snowboard.updateOne(req.body.snowboard)
 		})
 		// if that succeeded, return 204 and no JSON
 		.then(() => res.sendStatus(204))
@@ -100,14 +100,14 @@ router.patch('/snerberds/:id', requireToken, removeBlanks, (req, res, next) => {
 
 // DESTROY
 // DELETE /pets/5a7db6c74d55bc51bdf39793
-router.delete('/snerberds/:id', requireToken, (req, res, next) => {
-	Snerberd.findById(req.params.id)
+router.delete('/snowboards/:id', requireToken, (req, res, next) => {
+	Snowboard.findById(req.params.id)
 		.then(handle404)
-		.then((snerberd) => {
+		.then((snowboard) => {
 			// throw an error if current user doesn't own `pet`
-			requireOwnership(req, snerberd)
+			requireOwnership(req, snowboard)
 			// delete the pet ONLY IF the above didn't throw
-			snerberd.deleteOne()
+			snowboard.deleteOne()
 		})
 		// send back 204 and no content if the deletion succeeded
 		.then(() => res.sendStatus(204))
