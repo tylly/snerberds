@@ -29,7 +29,7 @@ const router = express.Router();
 
 // INDEX
 // GET /snowboards
-router.get("/snowboards", user, (req, res, next) => {
+router.get("/snowboards", (req, res, next) => {
   //we want anyone to see snowboards so no requireToken
   //if we wanted to protect resources we could add that back in between
   //route and callback as second argument
